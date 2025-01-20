@@ -5,6 +5,7 @@ import com.atm.wallet.dto.UserDto;
 import com.atm.wallet.model.User;
 import com.atm.wallet.service.UserService;
 import com.atm.wallet.util.Response;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class UserController {
         return new Response<>(true, "User registered successfully", user);
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/{userId}")
     public Response<User> getUser(@PathVariable UUID userId) {
         User user = userService.getUserById(userId);

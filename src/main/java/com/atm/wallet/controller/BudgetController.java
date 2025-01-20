@@ -5,6 +5,7 @@ import com.atm.wallet.dto.UpdateBudgetDto;
 import com.atm.wallet.model.Budget;
 import com.atm.wallet.service.BudgetService;
 import com.atm.wallet.util.Response;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/api/v1/budget")
 public class BudgetController {
 

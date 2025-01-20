@@ -4,6 +4,7 @@ import com.atm.wallet.dto.TransactionDto;
 import com.atm.wallet.model.Transaction;
 import com.atm.wallet.service.TransactionService;
 import com.atm.wallet.util.Response;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/api/v1/transaction")
 public class TransactionController {
     private final TransactionService transactionService;
