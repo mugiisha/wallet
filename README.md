@@ -54,3 +54,4 @@ public enum TransactionType {
 ## Notice
 Once a user try to exceed budget he is prompted with a message that a transaction will exceed
 his/her budget and he/she will be asked to update budget or re-do the transaction to confirm exceeding budget.
+All info of budget and accounts can be found upon getting user by id
