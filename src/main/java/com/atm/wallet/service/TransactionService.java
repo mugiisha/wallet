@@ -6,6 +6,7 @@ import com.atm.wallet.exception.BadRequestException;
 import com.atm.wallet.model.Account;
 import com.atm.wallet.model.Budget;
 import com.atm.wallet.model.Transaction;
+import com.atm.wallet.repository.BudgetRepository;
 import com.atm.wallet.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +23,8 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountService accountService;
     private final UserService userService;
-    private final BudgetService budgetService;
+    private final BudgetRepository budgetService;
 
-    @Transactional
     public Transaction recordTransaction(TransactionDto transactionDto, UUID userId) {
         Account account = validateAndGetAccount(transactionDto.getAccountId(), userId);
         Transaction transaction = createTransactionFromDto(transactionDto);
@@ -74,7 +74,7 @@ public class TransactionService {
     }
 
     private Budget validateAndGetBudget(UUID userId, BigDecimal transactionAmount) {
-        Budget budget = budgetService.getBudgetById(userService.getUserById(userId).getBudget().getId());
+        Budget budget = budgetService.findById(userService.getUserById(userId).getBudget().getId()).orElseThrow(()->new BadRequestException("Budget not found"));
         if (budget == null) {
             throw new BadRequestException("User must create a budget to record outflow transactions");
         }
@@ -87,14 +87,14 @@ public class TransactionService {
         BigDecimal projectedUsedAmount = budget.getUsedAmount().add(transactionAmount);
         if (projectedUsedAmount.compareTo(budget.getAmount()) > 0 && budget.getExceedBudgetAttempts() < 1) {
             budget.setExceedBudgetAttempts(budget.getExceedBudgetAttempts() + 1);
-            budgetService.saveBudget(budget);
+            budgetService.save(budget);
             throw new BadRequestException("Transaction will exceed budget. Please update budget or retry to confirm exceeding budget");
         }
     }
 
     private void updateBudgetAndAccount(Budget budget, Account account, BigDecimal amount) {
         budget.setUsedAmount(budget.getUsedAmount().add(amount));
-        budgetService.saveBudget(budget);
+        budgetService.save(budget);
 
         updateAccountBalance(account, amount, false);
     }

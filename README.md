@@ -15,7 +15,7 @@ mvn install
 ```
 4. Add environment variables
 ```bash
- DB_URL=
+DB_URL=
 DB_USER=
 DB_PASSWORD=
 JWT_SECRET=

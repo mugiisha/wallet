@@ -5,6 +5,7 @@ import com.atm.wallet.exception.NotFoundException;
 import com.atm.wallet.model.Account;
 import com.atm.wallet.model.User;
 import com.atm.wallet.repository.AccountRepository;
+import com.atm.wallet.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,13 +20,13 @@ import java.util.UUID;
 public class AccountService {
 
     private final AccountRepository accountRepository;
-    private final UserService userService;
+    private final UserRepository userService;
 
     @Transactional
     public Account createAccount(AccountDto accountDto, UUID userId){
-        log.info("creating account for user: {}", userId);
+        log.info("creating account: {}", accountDto);
 
-        User user = userService.getUserById(userId);
+        User user = userService.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
 
         Account account = Account.builder()
                 .accountName(accountDto.getAccountName())
@@ -36,8 +37,11 @@ public class AccountService {
                 .build();
 
         Account savedAccount =  accountRepository.save(account);
-        user.setAccounts(List.of(savedAccount));
-        userService.saveUser(user);
+        log.info("savedAccount: {}", savedAccount);
+        List<Account> accounts = user.getAccounts();
+        accounts.add(account);
+        user.setAccounts(accounts);
+        userService.save(user);
 
         return savedAccount;
     }
